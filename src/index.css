@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+   .table {
+      @apply min-w-full divide-y divide-gray-200;
+   }
+   .th {
+      @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+   }
+   .td-bold {
+      @apply px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 w-1/4;
+   }
+   .td-thin {
+      @apply px-6 py-4 whitespace-nowrap text-sm text-gray-500 w-1/4;
+   }
+   .tbody {
+      @apply bg-white divide-y divide-gray-200;
+   }
+}

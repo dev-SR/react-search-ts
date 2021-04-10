@@ -1,110 +1,177 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { SaveIcon, EditIcon, CloseIcon } from './icon';
+const API_HOST = 'http://localhost:4000';
+const INVENTORY_API_URL = `${API_HOST}/inventory`;
 
-type openProp = {
-   open: boolean;
+type DATA = {
+   id: 1;
+   product_name: string;
+   product_category: string;
+   unit_price: string;
 };
-const SideBar = ({ open }: openProp) => {
-   const sidebarAnim = {
-      hidden: { opacity: 0 },
-      show: { opacity: 1, transition: { duration: 0.5 } }
+type EDITMODE = {
+   status: boolean;
+   rowKey: number | null;
+};
+type onEDIT = {
+   id: number;
+   currentUnitPrice: string;
+};
+
+type updateINVENTORY = {
+   id: number;
+   newUnitPrice: string;
+};
+type SAVE = {
+   id: number;
+   newUnitPrice: string;
+};
+
+function App() {
+   const [data, setData] = useState<DATA[]>([]);
+   const [inEditMode, setInEditMode] = useState<EDITMODE>({
+      status: false,
+      rowKey: null
+   });
+   const [unitPrice, setUnitPrice] = useState('');
+
+   const fetchInventory = () => {
+      fetch(`${INVENTORY_API_URL}`)
+         .then((res) => res.json())
+         .then((json) => setData(json));
    };
-   let large = useMedia('(min-width: 600px)');
-   console.log(large);
+   useEffect(() => {
+      fetchInventory();
+   }, []);
+
+   const onEdit = ({ id, currentUnitPrice }: onEDIT) => {
+      setInEditMode({
+         status: true,
+         rowKey: id
+      });
+      setUnitPrice(currentUnitPrice);
+   };
+
+   const updateInventory = ({ id, newUnitPrice }: updateINVENTORY) => {
+      fetch(`${INVENTORY_API_URL}/${id}`, {
+         method: 'PATCH',
+         body: JSON.stringify({
+            unit_price: newUnitPrice
+         }),
+         headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+         }
+      })
+         .then((response) => response.json())
+         .then((json) => {
+            // reset inEditMode and unit price state values
+            onCancel();
+            // fetch the updated data
+            fetchInventory();
+         });
+   };
+
+   const onSave = ({ id, newUnitPrice }: SAVE) => {
+      updateInventory({ id, newUnitPrice });
+   };
+
+   const onCancel = () => {
+      // reset the inEditMode state value
+      setInEditMode({
+         status: false,
+         rowKey: null
+      });
+      // reset the unit price state value
+      setUnitPrice('');
+   };
+
    return (
-      <motion.div
-         variants={sidebarAnim}
-         initial={false}
-         animate={large || open ? 'show' : 'hidden'}
-         className={`sm:flex w-1/3 bg-gray-200 border-r-2 border-gray-300 shadow-inner  p-5 sm:w-1/4 ${
-            open ? 'flex' : 'hidden'
-         } 
-          `}>
-         <div className='bg-gray-500 mt-5 h-4 my-2 w-full'>
-            <h1 className='text-3xl font-bold text-gray-700 text-center'>
-               LOGO
-            </h1>
-            <div className='flex mt-20 w-full flex-col p-2'>
-               <div className='w-full py-2 px-2 bg-gray-300 hover:bg-gray-400'>
-                  <a href='/home'> HOME</a>
-               </div>
-               <div className='w-full py-2 px-2 hover:bg-gray-400 '>
-                  <a href='/home'> HOME</a>
-               </div>
-               <div className='w-full py-2 px-2 hover:bg-gray-400'>
-                  <a href='/home'> HOME</a>
+      <div className='max-w-7xl mx-auto sm:px-6 lg:px-8'>
+         <div className='flex flex-col'>
+            <div className='-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8'>
+               <div className='py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8'>
+                  <div className='shadow overflow-hidden border-b border-gray-200 sm:rounded-lg'></div>
+
+                  <table className='table'>
+                     <thead>
+                        <tr>
+                           <th scope='col' className='th'>
+                              Product Name
+                           </th>
+                           <th scope='col' className='th'>
+                              Product Category
+                           </th>
+                           <th scope='col' className='th'>
+                              Unit Price
+                           </th>
+                           <th scope='col' className='th'>
+                              Action
+                           </th>
+                        </tr>
+                     </thead>
+                     <tbody className='tbody' x-max='1'>
+                        {data.map((item) => (
+                           <tr key={item.id}>
+                              <td className='td-bold'>{item.product_name}</td>
+                              <td className='td-thin'>
+                                 {item.product_category}
+                              </td>
+                              <td className='td-thin'>
+                                 {inEditMode.status &&
+                                 inEditMode.rowKey === item.id ? (
+                                    // SHOW INPUT
+                                    <input
+                                       className='bg-gray-200 p-1 text-black'
+                                       value={unitPrice}
+                                       onChange={(event) =>
+                                          setUnitPrice(event.target.value)
+                                       }
+                                    />
+                                 ) : (
+                                    item.unit_price
+                                    // SHOW PRICE
+                                 )}
+                              </td>
+                              <td className='td-thin'>
+                                 {inEditMode.status &&
+                                 inEditMode.rowKey === item.id ? (
+                                    <React.Fragment>
+                                       <button
+                                          onClick={() =>
+                                             onSave({
+                                                id: item.id,
+                                                newUnitPrice: unitPrice
+                                             })
+                                          }>
+                                          <SaveIcon />
+                                       </button>
+
+                                       <button
+                                          style={{ marginLeft: 8 }}
+                                          onClick={() => onCancel()}>
+                                          <CloseIcon />
+                                       </button>
+                                    </React.Fragment>
+                                 ) : (
+                                    <button
+                                       onClick={() =>
+                                          onEdit({
+                                             id: item.id,
+                                             currentUnitPrice: item.unit_price
+                                          })
+                                       }>
+                                       <EditIcon />
+                                    </button>
+                                 )}
+                              </td>
+                           </tr>
+                        ))}
+                     </tbody>
+                  </table>
                </div>
             </div>
          </div>
-      </motion.div>
-   );
-};
-
-type Toggle = {
-   toggle: () => void;
-};
-
-function useMedia(query: string) {
-   const [matches, setMatches] = useState(window.matchMedia(query).matches);
-   console.log(window.matchMedia(query));
-
-   // cDM, cDU
-
-   useEffect(() => {
-      let media = window.matchMedia(query);
-      if (media.matches !== matches) {
-         setMatches(media.matches);
-      }
-      let listener = () => setMatches(media.matches);
-      media.addEventListener('change', listener);
-      return () => media.removeEventListener('change', listener);
-   }, [query]);
-
-   return matches;
-}
-
-const Header = ({ toggle }: Toggle) => {
-   return (
-      <div className='bg-gray-50 h-20 w-full flex items-center pl-5'>
-         <motion.button
-            onClick={toggle}
-            className={`focus:outline-none sm:hidden`}>
-            <svg
-               xmlns='http://www.w3.org/2000/svg'
-               className='h-6 w-6'
-               fill='none'
-               viewBox='0 0 24 24'
-               stroke='currentColor'>
-               <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M4 6h16M4 12h16M4 18h16'
-               />
-            </svg>
-         </motion.button>
-      </div>
-   );
-};
-
-const Main = () => {
-   return <div className='bg-gray-100  w-full  h-full '></div>;
-};
-function App() {
-   const [open, isOpen] = useState(false);
-   const toggle = () => {
-      isOpen(!open);
-      console.log(open);
-   };
-   return (
-      <div className='flex h-screen bg-gray-100'>
-         <SideBar open={open} />
-         <div className='flex w-full  flex-col'>
-            <Header toggle={toggle} />
-            <Main />
-         </div>
       </div>
    );
 }
-
 export default App;
