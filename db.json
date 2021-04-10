@@ -4,7 +4,7 @@
       "id": 1,
       "product_name": "Weetabix",
       "product_category": "Cereal",
-      "unit_price": "501"
+      "unit_price": "new"
     },
     {
       "id": 2,
@@ -22,7 +22,7 @@
       "id": 4,
       "product_name": "Sunlight Detergent",
       "product_category": "Toiletries",
-      "unit_price": "406"
+      "unit_price": "1000"
     }
   ]
 }

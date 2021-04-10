@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SaveIcon, EditIcon, CloseIcon } from './icon';
+
 const API_HOST = 'http://localhost:4000';
 const INVENTORY_API_URL = `${API_HOST}/inventory`;
 
