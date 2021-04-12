@@ -131,7 +131,7 @@ function App() {
                            <h2 className=' text-gray-50'>PAGE NOT FOUND</h2>
                         </div>
                      )}
-                  </Route>{' '}
+                  </Route>
                </Switch>
             </div>
          </Router>
