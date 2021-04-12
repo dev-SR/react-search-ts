@@ -1,3 +1,8 @@
+import React, { useEffect } from 'react';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism-tomorrow.css';
+
+export const appCode = `
 import React, { useEffect, useRef, useState } from 'react';
 import {
    BrowserRouter as Router,
@@ -17,11 +22,9 @@ const FilterCom = () => {
    const [input, setInput] = useState('');
    // 2 different state is mandatory:One for original  data and one for filtered
    // data so that we won't modify actual data after each filtration
+
    const [countryListDefault, setCountryListDefault] = useState<CountryList>();
-   const [
-      countryListFiltered,
-      setCountryListFiltered
-   ] = useState<CountryList>();
+   const [countryListFiltered,setCountryListFiltered] = useState<CountryList>();
 
    const updateInput = async (input: string) => {
       // filter original
@@ -31,7 +34,7 @@ const FilterCom = () => {
             return country.name.toLowerCase().includes(input.toLowerCase());
          //or, return country.name.toLowerCase().match(new RegExp(''));// /(?:)/
          else {
-            var regex = new RegExp(`${input.toLowerCase()}`); //if in-> a , out-> /a/
+            var regex = new RegExp(\`\${input.toLowerCase()}\`); //if in-> a , out-> /a/
             return country.name.toLowerCase().match(regex);
          }
       });
@@ -89,17 +92,17 @@ const Nav = () => {
          <div className='flex ml-10 space-x-4'>
             <Link
                to='/code'
-               className={`text-xl ${
+               className={\`text-xl \${
                   l.pathname === '/code' ? 'border-b-2 border-blue-200' : ''
-               }`}>
+               }\`}>
                Code
             </Link>
 
             <Link
                to='/'
-               className={`text-xl ${
+               className={\`text-xl \${
                   l.pathname === '/' ? 'border-b-2 border-blue-200' : ''
-               }`}>
+               }\`}>
                Home
             </Link>
          </div>
@@ -130,3 +133,23 @@ function App() {
 }
 
 export default App;
+
+`;
+export default function Code({
+   code,
+   language
+}: {
+   code: string;
+   language: string;
+}) {
+   useEffect(() => {
+      Prism.highlightAll();
+   }, []);
+   return (
+      <div className='w-full'>
+         <pre className=' rounded-xl'>
+            <code className={`language-${language} `}>{code}</code>
+         </pre>
+      </div>
+   );
+}
