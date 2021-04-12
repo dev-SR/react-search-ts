@@ -113,8 +113,11 @@ function App() {
       <div className='h-screen flex flex-col bg-gray-900 text-gray-300  items-center '>
          <Router>
             <Nav />
-            <Switch>
-               <div className='w-full flex-1 overflow-y-hidden flex flex-col'>
+            <div className='w-full flex-1 overflow-y-hidden flex flex-col'>
+               <Switch>
+                  <Route path='/' exact>
+                     <FilterCom />
+                  </Route>
                   <Route path='/code' exact>
                      <div className='w-full overflow-y-auto flex justify-center'>
                         <div className='w-11/12 '>
@@ -122,19 +125,15 @@ function App() {
                         </div>
                      </div>
                   </Route>
-                  <Route path='/' exact>
-                     <FilterCom />
-                  </Route>
-
                   <Route path='*' exact>
                      {() => (
                         <div className='h-full flex justify-center items-center'>
                            <h2 className=' text-gray-50'>PAGE NOT FOUND</h2>
                         </div>
                      )}
-                  </Route>
-               </div>
-            </Switch>
+                  </Route>{' '}
+               </Switch>
+            </div>
          </Router>
       </div>
    );
