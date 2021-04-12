@@ -18,4 +18,14 @@
    .tbody {
       @apply bg-white divide-y divide-gray-200;
    }
+   .center {
+      @apply flex justify-center items-center h-screen;
+   }
+   .btn {
+      @apply px-4 py-2 rounded focus:outline-none;
+   }
+
+   .btn-yellow {
+      @apply bg-yellow-400 hover:bg-yellow-300;
+   }
 }
