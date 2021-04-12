@@ -4,7 +4,8 @@ import {
    Route,
    Link,
    useParams,
-   useLocation
+   useLocation,
+   Switch
 } from 'react-router-dom';
 import Code, { appCode } from './syntaxHighligher/code';
 
@@ -112,18 +113,28 @@ function App() {
       <div className='h-screen flex flex-col bg-gray-900 text-gray-300  items-center '>
          <Router>
             <Nav />
-            <div className='w-full flex-1 overflow-y-hidden flex flex-col'>
-               <Route path='/code' exact>
-                  <div className='w-full overflow-y-auto flex justify-center'>
-                     <div className='w-11/12 '>
-                        <Code code={appCode} language='javascript' />
+            <Switch>
+               <div className='w-full flex-1 overflow-y-hidden flex flex-col'>
+                  <Route path='/code' exact>
+                     <div className='w-full overflow-y-auto flex justify-center'>
+                        <div className='w-11/12 '>
+                           <Code code={appCode} language='javascript' />
+                        </div>
                      </div>
-                  </div>
-               </Route>
-               <Route path='/' exact>
-                  <FilterCom />
-               </Route>
-            </div>
+                  </Route>
+                  <Route path='/' exact>
+                     <FilterCom />
+                  </Route>
+
+                  <Route path='*' exact>
+                     {() => (
+                        <div className='h-full flex justify-center items-center'>
+                           <h2 className=' text-gray-50'>PAGE NOT FOUND</h2>
+                        </div>
+                     )}
+                  </Route>
+               </div>
+            </Switch>
          </Router>
       </div>
    );
